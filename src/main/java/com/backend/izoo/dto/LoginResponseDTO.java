@@ -1,10 +1,20 @@
 package com.backend.izoo.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Resposta do login com token JWT e dados do usuário")
 public class LoginResponseDTO {
     
+    @Schema(description = "Mensagem de sucesso do login", example = "Login realizado com sucesso")
     private String message;
+    
+    @Schema(description = "Token JWT para autenticação", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String token;
+    
+    @Schema(description = "Tipo do token", example = "Bearer")
     private String tipo = "Bearer";
+    
+    @Schema(description = "Dados do usuário logado")
     private UsuarioDTO usuario;
     
     public LoginResponseDTO() {}

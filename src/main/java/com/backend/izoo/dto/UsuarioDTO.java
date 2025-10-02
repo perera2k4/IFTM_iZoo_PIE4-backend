@@ -6,34 +6,45 @@ import java.time.Instant;
 import com.backend.izoo.model.Usuario;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Dados do usuário para transferência de dados")
 public class UsuarioDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Schema(description = "ID único do usuário", accessMode = Schema.AccessMode.READ_ONLY, example = "507f1f77bcf86cd799439011")
     private String id;
 
     @NotBlank(message = "Login é obrigatório")
+    @Schema(description = "Nome de usuário único para login", example = "bruno.pereira", requiredMode = Schema.RequiredMode.REQUIRED)
     private String login;
 
     @NotBlank(message = "Senha é obrigatória")
+    @Schema(description = "Senha do usuário (será criptografada)", example = "MinhaSenh@123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String senha;
 
     @Pattern(regexp = "ADMIN|USER|SUPERVISOR|FUNCIONARIO", message = "Cargo deve ser 'ADMIN', 'USER', 'SUPERVISOR', 'FUNCIONARIO'")
+    @Schema(description = "Cargo/função do usuário no sistema", example = "ADMIN", allowableValues = {"ADMIN", "USER", "SUPERVISOR", "FUNCIONARIO"})
     private String cargo = "USER";
 
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email deve ter formato válido")
+    @Schema(description = "Endereço de email do usuário", example = "bruno@email.com", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
     @NotBlank(message = "Telefone é obrigatório")
     @Pattern(regexp = "\\+55\\d{2}9\\d{8}", message = "Telefone deve seguir o padrão +55XX9XXXXXXXX")
+    @Schema(description = "Número de telefone celular brasileiro", example = "+5534999887766", requiredMode = Schema.RequiredMode.REQUIRED)
     private String telefone;
 
+    @Schema(description = "Data e hora de criação do usuário", accessMode = Schema.AccessMode.READ_ONLY)
     private Instant createdAt;
+    
+    @Schema(description = "Data e hora da última atualização", accessMode = Schema.AccessMode.READ_ONLY)
     private Instant updatedAt;
 
     public UsuarioDTO() {}

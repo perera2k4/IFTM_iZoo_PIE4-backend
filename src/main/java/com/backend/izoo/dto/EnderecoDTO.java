@@ -5,32 +5,47 @@ import java.time.Instant;
 
 import com.backend.izoo.model.Endereco;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Schema(description = "Dados do endereço para transferência de dados")
 public class EnderecoDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Schema(description = "ID único do endereço", accessMode = Schema.AccessMode.READ_ONLY, example = "507f1f77bcf86cd799439011")
     private String id;
 
     @NotBlank(message = "Rua é obrigatória")
+    @Schema(description = "Nome da rua", example = "Rua das Flores", requiredMode = Schema.RequiredMode.REQUIRED)
     private String rua;
 
     @NotNull(message = "Número é obrigatório")
+    @Schema(description = "Número do endereço", example = "123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String numero;
 
     @NotBlank(message = "Bairro é obrigatório")
+    @Schema(description = "Nome do bairro", example = "Centro", requiredMode = Schema.RequiredMode.REQUIRED)
     private String bairro;
 
     @NotBlank(message = "Cidade é obrigatória")
+    @Schema(description = "Nome da cidade", example = "Uberlândia", requiredMode = Schema.RequiredMode.REQUIRED)
     private String cidade;
 
     @NotBlank(message = "Estado é obrigatório")
+    @Schema(description = "Sigla do estado (UF)", example = "MG", requiredMode = Schema.RequiredMode.REQUIRED)
     private String estado;
 
+    @Schema(description = "Latitude da localização", example = "-18.9111")
     private Double latitude;
+    
+    @Schema(description = "Longitude da localização", example = "-48.2611")
     private Double longitude;
+    
+    @Schema(description = "Data e hora de criação do endereço", accessMode = Schema.AccessMode.READ_ONLY)
     private Instant createdAt;
+    
+    @Schema(description = "Data e hora da última atualização", accessMode = Schema.AccessMode.READ_ONLY)
     private Instant updatedAt;
 
     public EnderecoDTO() {}

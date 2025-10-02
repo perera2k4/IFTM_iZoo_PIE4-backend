@@ -22,10 +22,19 @@ import com.backend.izoo.dto.LoginResponseDTO;
 import com.backend.izoo.dto.UsuarioDTO;
 import com.backend.izoo.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/usuario")
+@Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários e autenticação")
 public class UsuarioController {
 
     @Autowired
@@ -33,7 +42,19 @@ public class UsuarioController {
 
     // Endpoints públicos de autenticação
     @PostMapping("/registro")
-    public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @Operation(
+        summary = "Registrar novo usuário",
+        description = "Cria um novo usuário no sistema. Endpoint público que não requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário já existe",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<?> registrar(
+            @Parameter(description = "Dados do usuário a ser registrado", required = true)
+            @Valid @RequestBody UsuarioDTO usuarioDTO) {
         try {
             UsuarioDTO novoUsuario = usuarioService.registrar(usuarioDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
@@ -44,7 +65,19 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    @Operation(
+        summary = "Fazer login",
+        description = "Autentica o usuário e retorna um token JWT. Endpoint público que não requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login realizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<?> login(
+            @Parameter(description = "Credenciais de login", required = true)
+            @Valid @RequestBody LoginRequestDTO loginRequest) {
         try {
             LoginResponseDTO response = usuarioService.login(loginRequest);
             return ResponseEntity.ok(response);
@@ -57,7 +90,21 @@ public class UsuarioController {
     // Endpoints protegidos - CRUD completo
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
-    public ResponseEntity<?> buscarPorId(@PathVariable String id) {
+    @Operation(
+        summary = "Buscar usuário por ID",
+        description = "Retorna os dados de um usuário específico. Requer autenticação e autorização.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public ResponseEntity<?> buscarPorId(
+            @Parameter(description = "ID do usuário", required = true)
+            @PathVariable String id) {
         try {
             UsuarioDTO usuario = usuarioService.buscarPorId(id);
             return ResponseEntity.ok(usuario);
@@ -69,6 +116,16 @@ public class UsuarioController {
 
     @GetMapping
     @PreAuthorize("hasRole('admin')")
+    @Operation(
+        summary = "Listar todos os usuários",
+        description = "Retorna uma lista com todos os usuários cadastrados. Requer permissão de administrador.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
+    })
     public ResponseEntity<List<UsuarioDTO>> buscarTodos() {
         List<UsuarioDTO> lista = usuarioService.buscarTodos();
         return ResponseEntity.ok(lista);
@@ -76,14 +133,42 @@ public class UsuarioController {
 
     @GetMapping("/cargo")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<List<UsuarioDTO>> buscarPorCargo(@RequestParam String cargo) {
+    @Operation(
+        summary = "Buscar usuários por cargo",
+        description = "Retorna uma lista de usuários filtrados por cargo. Requer permissão de administrador.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuários filtrada por cargo",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
+    })
+    public ResponseEntity<List<UsuarioDTO>> buscarPorCargo(
+            @Parameter(description = "Cargo para filtrar usuários (ADMIN, USER, SUPERVISOR, FUNCIONARIO)", required = true)
+            @RequestParam String cargo) {
         List<UsuarioDTO> lista = usuarioService.buscarPorCargo(cargo);
         return ResponseEntity.ok(lista);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
-    public ResponseEntity<?> atualizar(@PathVariable String id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @Operation(
+        summary = "Atualizar usuário completo",
+        description = "Atualiza todos os dados de um usuário. Requer autenticação e autorização.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public ResponseEntity<?> atualizar(
+            @Parameter(description = "ID do usuário", required = true)
+            @PathVariable String id, 
+            @Parameter(description = "Dados atualizados do usuário", required = true)
+            @Valid @RequestBody UsuarioDTO usuarioDTO) {
         try {
             UsuarioDTO usuarioAtualizado = usuarioService.atualizar(id, usuarioDTO);
             return ResponseEntity.ok(usuarioAtualizado);
@@ -95,7 +180,23 @@ public class UsuarioController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
-    public ResponseEntity<?> atualizarParcial(@PathVariable String id, @RequestBody UsuarioDTO usuarioDTO) {
+    @Operation(
+        summary = "Atualizar usuário parcial",
+        description = "Atualiza parcialmente os dados de um usuário. Requer autenticação e autorização.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public ResponseEntity<?> atualizarParcial(
+            @Parameter(description = "ID do usuário", required = true)
+            @PathVariable String id, 
+            @Parameter(description = "Dados parciais para atualização", required = true)
+            @RequestBody UsuarioDTO usuarioDTO) {
         try {
             UsuarioDTO usuarioAtualizado = usuarioService.atualizarParcial(id, usuarioDTO);
             return ResponseEntity.ok(usuarioAtualizado);
@@ -107,7 +208,21 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<?> deletar(@PathVariable String id) {
+    @Operation(
+        summary = "Deletar usuário",
+        description = "Remove um usuário do sistema. Requer permissão de administrador.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
+    })
+    public ResponseEntity<?> deletar(
+            @Parameter(description = "ID do usuário a ser deletado", required = true)
+            @PathVariable String id) {
         try {
             usuarioService.deletar(id);
             return ResponseEntity.ok(new SuccessResponse("Usuário deletado com sucesso"));

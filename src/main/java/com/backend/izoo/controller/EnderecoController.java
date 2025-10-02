@@ -20,24 +20,55 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.izoo.dto.EnderecoDTO;
 import com.backend.izoo.service.EnderecoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/endereco")
 @Validated
+@Tag(name = "Endereços", description = "Endpoints para gerenciamento de endereços")
+@SecurityRequirement(name = "Bearer Authentication")
 public class EnderecoController {
 
     @Autowired
     private EnderecoService enderecoService;
 
     @GetMapping
+    @Operation(
+        summary = "Listar todos os endereços",
+        description = "Retorna uma lista com todos os endereços cadastrados. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços retornada com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
     public ResponseEntity<List<EnderecoDTO>> buscarTodos() {
         List<EnderecoDTO> lista = enderecoService.buscarTodos();
         return ResponseEntity.ok().body(lista);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<EnderecoDTO> buscarPorId(@PathVariable String id) {
+    @Operation(
+        summary = "Buscar endereço por ID",
+        description = "Retorna os dados de um endereço específico. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Endereço encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Endereço não encontrado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<EnderecoDTO> buscarPorId(
+            @Parameter(description = "ID do endereço", required = true)
+            @PathVariable String id) {
         try {
             EnderecoDTO endereco = enderecoService.buscarPorId(id);
             return ResponseEntity.ok().body(endereco);
@@ -47,7 +78,19 @@ public class EnderecoController {
     }
 
     @PostMapping
-    public ResponseEntity<EnderecoDTO> inserir(@Valid @RequestBody EnderecoDTO endereco) {
+    @Operation(
+        summary = "Criar novo endereço",
+        description = "Cadastra um novo endereço no sistema. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Endereço criado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<EnderecoDTO> inserir(
+            @Parameter(description = "Dados do endereço a ser criado", required = true)
+            @Valid @RequestBody EnderecoDTO endereco) {
         try {
             EnderecoDTO entidade = enderecoService.inserir(endereco);
             return ResponseEntity.status(HttpStatus.CREATED).body(entidade);
@@ -57,7 +100,22 @@ public class EnderecoController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EnderecoDTO> atualizar(@PathVariable String id, @Valid @RequestBody EnderecoDTO endereco) {
+    @Operation(
+        summary = "Atualizar endereço completo",
+        description = "Atualiza todos os dados de um endereço. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Endereço atualizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Endereço não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<EnderecoDTO> atualizar(
+            @Parameter(description = "ID do endereço", required = true)
+            @PathVariable String id, 
+            @Parameter(description = "Dados atualizados do endereço", required = true)
+            @Valid @RequestBody EnderecoDTO endereco) {
         try {
             EnderecoDTO enderecoAtualizado = enderecoService.atualizar(id, endereco);
             return ResponseEntity.ok().body(enderecoAtualizado);
@@ -69,7 +127,22 @@ public class EnderecoController {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<EnderecoDTO> atualizarParcial(@PathVariable String id, @RequestBody EnderecoDTO endereco) {
+    @Operation(
+        summary = "Atualizar endereço parcial",
+        description = "Atualiza parcialmente os dados de um endereço. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Endereço atualizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Endereço não encontrado"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<EnderecoDTO> atualizarParcial(
+            @Parameter(description = "ID do endereço", required = true)
+            @PathVariable String id, 
+            @Parameter(description = "Dados parciais para atualização", required = true)
+            @RequestBody EnderecoDTO endereco) {
         try {
             EnderecoDTO enderecoAtualizado = enderecoService.atualizarParcial(id, endereco);
             return ResponseEntity.ok().body(enderecoAtualizado);
@@ -81,7 +154,18 @@ public class EnderecoController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable String id) {
+    @Operation(
+        summary = "Deletar endereço",
+        description = "Remove um endereço do sistema. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Endereço deletado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Endereço não encontrado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<Void> deletar(
+            @Parameter(description = "ID do endereço a ser deletado", required = true)
+            @PathVariable String id) {
         try {
             enderecoService.deletar(id);
             return ResponseEntity.noContent().build();
@@ -93,26 +177,68 @@ public class EnderecoController {
     // Endpoints adicionais para busca por critérios específicos
 
     @GetMapping("/cidade/{cidade}")
-    public ResponseEntity<List<EnderecoDTO>> buscarPorCidade(@PathVariable String cidade) {
+    @Operation(
+        summary = "Buscar endereços por cidade",
+        description = "Retorna uma lista de endereços filtrados por cidade. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços da cidade",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<List<EnderecoDTO>> buscarPorCidade(
+            @Parameter(description = "Nome da cidade", required = true)
+            @PathVariable String cidade) {
         List<EnderecoDTO> lista = enderecoService.buscarPorCidade(cidade);
         return ResponseEntity.ok().body(lista);
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<EnderecoDTO>> buscarPorEstado(@PathVariable String estado) {
+    @Operation(
+        summary = "Buscar endereços por estado",
+        description = "Retorna uma lista de endereços filtrados por estado (UF). Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços do estado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<List<EnderecoDTO>> buscarPorEstado(
+            @Parameter(description = "Sigla do estado (UF)", required = true, example = "MG")
+            @PathVariable String estado) {
         List<EnderecoDTO> lista = enderecoService.buscarPorEstado(estado);
         return ResponseEntity.ok().body(lista);
     }
 
     @GetMapping("/buscar")
+    @Operation(
+        summary = "Buscar endereços por cidade e estado",
+        description = "Retorna uma lista de endereços filtrados por cidade e estado. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços filtrada",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
     public ResponseEntity<List<EnderecoDTO>> buscarPorCidadeEEstado(
+            @Parameter(description = "Nome da cidade", required = true)
             @RequestParam String cidade, 
+            @Parameter(description = "Sigla do estado (UF)", required = true, example = "MG")
             @RequestParam String estado) {
         List<EnderecoDTO> lista = enderecoService.buscarPorCidadeEEstado(cidade, estado);
         return ResponseEntity.ok().body(lista);
     }
 
     @GetMapping("/com-localizacao")
+    @Operation(
+        summary = "Buscar endereços com coordenadas",
+        description = "Retorna uma lista de endereços que possuem latitude e longitude definidas. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços com localização",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnderecoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
     public ResponseEntity<List<EnderecoDTO>> buscarComLocalizacao() {
         List<EnderecoDTO> lista = enderecoService.buscarComLocalizacao();
         return ResponseEntity.ok().body(lista);
