@@ -27,8 +27,8 @@ public class UsuarioDTO implements Serializable {
     @Schema(description = "Senha do usuário (será criptografada)", example = "MinhaSenh@123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String senha;
 
-    @Pattern(regexp = "ADMIN|USER|SUPERVISOR|FUNCIONARIO", message = "Cargo deve ser 'ADMIN', 'USER', 'SUPERVISOR', 'FUNCIONARIO'")
-    @Schema(description = "Cargo/função do usuário no sistema", example = "ADMIN", allowableValues = {"ADMIN", "USER", "SUPERVISOR", "FUNCIONARIO"})
+    @Pattern(regexp = "ADMIN|USER", message = "Cargo deve ser 'ADMIN', 'USER'")
+    @Schema(description = "Cargo/função do usuário no sistema", example = "ADMIN", allowableValues = {"ADMIN", "USER"})
     private String cargo = "USER";
 
     @NotBlank(message = "Email é obrigatório")

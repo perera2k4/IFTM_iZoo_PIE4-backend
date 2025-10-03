@@ -144,7 +144,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
     })
     public ResponseEntity<List<UsuarioDTO>> buscarPorCargo(
-            @Parameter(description = "Cargo para filtrar usuários (ADMIN, USER, SUPERVISOR, FUNCIONARIO)", required = true)
+            @Parameter(description = "Cargo para filtrar usuários (ADMIN, USER)", required = true)
             @RequestParam String cargo) {
         List<UsuarioDTO> lista = usuarioService.buscarPorCargo(cargo);
         return ResponseEntity.ok(lista);
