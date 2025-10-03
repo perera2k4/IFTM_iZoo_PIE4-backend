@@ -22,7 +22,9 @@ public class CorsConfig {
             "https://localhost:*",
             "https://127.0.0.1:*",
             "https://*.vercel.app",
-            "https://izoo-two.vercel.app"
+            "https://*.vercel.app/*",
+            "https://izoo-two.vercel.app",
+            "https://izoo-two.vercel.app/*"
         ));
         
         // Para desenvolvimento, você pode usar:
