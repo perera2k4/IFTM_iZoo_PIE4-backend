@@ -53,8 +53,21 @@ public class UsuarioService {
             throw new RuntimeException("Email já está em uso: " + usuarioDTO.getEmail());
         }
 
+        // VALIDAÇÃO DE SEGURANÇA: Bloquear criação de ADMIN e AGENT via registro
+        if (usuarioDTO.getCargo() != null) {
+            String cargo = usuarioDTO.getCargo().trim().toUpperCase();
+            if ("ADMIN".equals(cargo) || "AGENT".equals(cargo)) {
+                throw new RuntimeException("Não é possível criar usuários com cargo ADMIN ou AGENT. Apenas USER é permitido no registro.");
+            }
+        }
+        
         Usuario entidade = new Usuario();
         copiaDTOparaEntidade(usuarioDTO, entidade);
+        
+        // Definir cargo padrão como USER se não especificado
+        if (entidade.getCargo() == null || entidade.getCargo().trim().isEmpty()) {
+            entidade.setCargo("USER");
+        }
         
         // Criptografar senha
         entidade.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
@@ -108,7 +121,12 @@ public class UsuarioService {
                 throw new RuntimeException("Email já está em uso: " + usuarioDTO.getEmail());
             }
 
+            // Preservar cargo original se não for admin (será controlado por endpoint específico)
+            String cargoOriginal = entidade.getCargo();
             copiaDTOparaEntidade(usuarioDTO, entidade);
+            
+            // Restaurar cargo original - alteração de cargo deve ser feita pelo endpoint específico
+            entidade.setCargo(cargoOriginal);
             
             // Criptografar nova senha se fornecida
             if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().trim().isEmpty()) {
@@ -147,9 +165,36 @@ public class UsuarioService {
         return lista.stream().map(UsuarioDTO::new).toList();
     }
 
+    public UsuarioDTO alterarCargo(String id, String novoCargo) {
+        // Validar se o cargo é válido
+        if (!novoCargo.matches("ADMIN|USER|AGENT")) {
+            throw new RuntimeException("Cargo inválido. Deve ser 'ADMIN', 'USER' ou 'AGENT'");
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isPresent()) {
+            Usuario entidade = usuarioOpt.get();
+            entidade.setCargo(novoCargo);
+            entidade.setUpdatedAt(Instant.now());
+            entidade = usuarioRepository.save(entidade);
+            return new UsuarioDTO(entidade);
+        }
+        throw new RuntimeException("Usuário não encontrado com id: " + id);
+    }
+
     private void copiaDTOparaEntidade(UsuarioDTO usuarioDTO, Usuario entidade) {
         entidade.setLogin(usuarioDTO.getLogin());
-        entidade.setCargo(usuarioDTO.getCargo());
+        // Se cargo não for fornecido ou for vazio, usar USER como padrão
+        if (usuarioDTO.getCargo() != null && !usuarioDTO.getCargo().trim().isEmpty()) {
+            String cargoUpper = usuarioDTO.getCargo().toUpperCase();
+            // VALIDAÇÃO DE SEGURANÇA: Bloquear ADMIN e AGENT
+            if ("ADMIN".equals(cargoUpper) || "AGENT".equals(cargoUpper)) {
+                throw new RuntimeException("Não é possível definir cargo ADMIN ou AGENT via registro. Apenas USER é permitido.");
+            }
+            entidade.setCargo(cargoUpper);
+        } else {
+            entidade.setCargo("USER");
+        }
         entidade.setEmail(usuarioDTO.getEmail());
         entidade.setTelefone(usuarioDTO.getTelefone());
         // Não copiar senha aqui - será tratada separadamente para criptografia
@@ -164,9 +209,7 @@ public class UsuarioService {
             }
             entidade.setLogin(usuarioDTO.getLogin());
         }
-        if (usuarioDTO.getCargo() != null && !usuarioDTO.getCargo().trim().isEmpty()) {
-            entidade.setCargo(usuarioDTO.getCargo());
-        }
+        // Remover alteração de cargo deste método - deve ser feito apenas pelo endpoint específico para admins
         if (usuarioDTO.getEmail() != null && !usuarioDTO.getEmail().trim().isEmpty()) {
             // Verificar se novo email já existe
             if (!entidade.getEmail().equals(usuarioDTO.getEmail()) && 

@@ -46,7 +46,7 @@ public class UsuarioController {
     @PostMapping("/registro")
     @Operation(
         summary = "Registrar novo usuário",
-        description = "Cria um novo usuário no sistema. Endpoint público que não requer autenticação."
+        description = "Cria um novo usuário no sistema. Cargo padrão: USER. Apenas cargo USER é permitido no registro. Outros cargos são definidos manualmente por admins. Endpoint público que não requer autenticação."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
@@ -146,17 +146,47 @@ public class UsuarioController {
         @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
     })
     public ResponseEntity<List<UsuarioDTO>> buscarPorCargo(
-            @Parameter(description = "Cargo para filtrar usuários (ADMIN, USER)", required = true)
+            @Parameter(description = "Cargo para filtrar usuários (ADMIN, USER, AGENT)", required = true)
             @RequestParam String cargo) {
         List<UsuarioDTO> lista = usuarioService.buscarPorCargo(cargo);
         return ResponseEntity.ok(lista);
+    }
+
+    @PatchMapping("/{id}/cargo")
+    @PreAuthorize("hasRole('admin')")
+    @Operation(
+        summary = "Alterar cargo de usuário",
+        description = "Permite que administradores alterem o cargo de qualquer usuário. Requer permissão de administrador.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cargo alterado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Cargo inválido",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
+    })
+    public ResponseEntity<?> alterarCargo(
+            @Parameter(description = "ID do usuário", required = true)
+            @PathVariable String id,
+            @Parameter(description = "Novo cargo do usuário", required = true)
+            @RequestParam String cargo) {
+        try {
+            UsuarioDTO usuarioAtualizado = usuarioService.alterarCargo(id, cargo);
+            return ResponseEntity.ok(usuarioAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Erro ao alterar cargo: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
     @Operation(
         summary = "Atualizar usuário completo",
-        description = "Atualiza todos os dados de um usuário. Requer autenticação e autorização.",
+        description = "Atualiza todos os dados de um usuário. Usuários comuns não podem alterar seu próprio cargo. Requer autenticação e autorização.",
         security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses(value = {
@@ -184,7 +214,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
     @Operation(
         summary = "Atualizar usuário parcial",
-        description = "Atualiza parcialmente os dados de um usuário. Requer autenticação e autorização.",
+        description = "Atualiza parcialmente os dados de um usuário. Usuários comuns não podem alterar seu próprio cargo. Requer autenticação e autorização.",
         security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses(value = {

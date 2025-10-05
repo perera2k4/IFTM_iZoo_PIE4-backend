@@ -28,8 +28,8 @@ public class Usuario implements Serializable {
     private String senha;
 
     @NotBlank(message = "Cargo é obrigatório")
-    @Pattern(regexp = "admin|user", message = "Cargo deve ser 'admin' ou 'user'")
-    private String cargo = "user";
+    @Pattern(regexp = "ADMIN|USER|AGENT", message = "Cargo deve ser 'ADMIN', 'USER' ou 'AGENT'")
+    private String cargo = "USER";
 
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email deve ter formato válido")
