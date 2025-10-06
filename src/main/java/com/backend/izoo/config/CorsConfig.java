@@ -15,20 +15,11 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permite origens específicas (você pode ajustar conforme necessário)
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:*",
-            "http://127.0.0.1:*",
-            "https://localhost:*",
-            "https://127.0.0.1:*",
-            "https://*.vercel.app",
-            "https://*.vercel.app/*",
-            "https://izoo-two.vercel.app",
-            "https://izoo-two.vercel.app/*"
-        ));
+        // Permite TODAS as origens - para desenvolvimento e produção
+        configuration.setAllowedOrigins(Arrays.asList("*"));
         
-        // Para desenvolvimento, você pode usar:
-        // configuration.setAllowedOrigins(Arrays.asList("*"));
+        // Alternativa usando patterns (se precisar de mais controle):
+        // configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         
         // Permite todos os métodos HTTP
         configuration.setAllowedMethods(Arrays.asList(
@@ -38,8 +29,14 @@ public class CorsConfig {
         // Permite todos os headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
-        // Permite credenciais (cookies, authorization headers, etc.)
+        // IMPORTANTE: Quando allowedOrigins é "*", allowCredentials deve ser false
+        configuration.setAllowCredentials(false);
+        
+        // Se você precisar de credenciais (JWT no header Authorization), use esta configuração alternativa:
+        /*
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        */
         
         // Expõe headers para o frontend
         configuration.setExposedHeaders(Arrays.asList(
