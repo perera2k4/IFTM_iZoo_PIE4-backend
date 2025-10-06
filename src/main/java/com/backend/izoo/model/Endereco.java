@@ -32,6 +32,9 @@ public class Endereco implements Serializable {
 
     @NotBlank(message = "Estado é obrigatório")
     private String estado;
+    
+    @NotBlank(message = "CEP é obrigatório")
+    private String cep;
 
     private Double latitude;
     private Double longitude;
@@ -44,14 +47,14 @@ public class Endereco implements Serializable {
 
     public Endereco() {}
 
-    public Endereco(String id, String rua, String numero, String bairro, String cidade, String estado, 
-                   Double latitude, Double longitude, Instant createdAt, Instant updatedAt) {
+    public Endereco(String id, String rua, String numero, String bairro, String cidade, String estado, String cep, Double latitude, Double longitude, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.rua = rua;
         this.numero = numero;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
+        this.cep = cep;
         this.latitude = latitude;
         this.longitude = longitude;
         this.createdAt = createdAt;
@@ -104,6 +107,14 @@ public class Endereco implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+    
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public Double getLatitude() {
@@ -166,7 +177,7 @@ public class Endereco implements Serializable {
     @Override
     public String toString() {
         return "Endereco [id=" + id + ", rua=" + rua + ", numero=" + numero + ", bairro=" + bairro + 
-               ", cidade=" + cidade + ", estado=" + estado + ", latitude=" + latitude + 
+               ", cidade=" + cidade + ", estado=" + estado + ", cep=" + cep + ", latitude=" + latitude + 
                ", longitude=" + longitude + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
     }
 }

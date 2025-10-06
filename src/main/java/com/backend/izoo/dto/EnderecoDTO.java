@@ -27,7 +27,7 @@ public class EnderecoDTO implements Serializable {
     @NotBlank(message = "Bairro é obrigatório")
     @Schema(description = "Nome do bairro", example = "Centro", requiredMode = Schema.RequiredMode.REQUIRED)
     private String bairro;
-
+    
     @NotBlank(message = "Cidade é obrigatória")
     @Schema(description = "Nome da cidade", example = "Uberlândia", requiredMode = Schema.RequiredMode.REQUIRED)
     private String cidade;
@@ -35,6 +35,10 @@ public class EnderecoDTO implements Serializable {
     @NotBlank(message = "Estado é obrigatório")
     @Schema(description = "Sigla do estado (UF)", example = "MG", requiredMode = Schema.RequiredMode.REQUIRED)
     private String estado;
+    
+    @NotBlank(message = "CEP é obrigatório")
+    @Schema(description = "Número do CEP", example = "38307-096", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String cep;
 
     @Schema(description = "Latitude da localização", example = "-18.9111")
     private Double latitude;
@@ -50,14 +54,14 @@ public class EnderecoDTO implements Serializable {
 
     public EnderecoDTO() {}
 
-    public EnderecoDTO(String id, String rua, String numero, String bairro, String cidade, String estado,
-                      Double latitude, Double longitude, Instant createdAt, Instant updatedAt) {
+    public EnderecoDTO(String id, String rua, String numero, String bairro, String cidade, String estado, String cep, Double latitude, Double longitude, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.rua = rua;
         this.numero = numero;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
+        this.cep = cep;
         this.latitude = latitude;
         this.longitude = longitude;
         this.createdAt = createdAt;
@@ -71,6 +75,7 @@ public class EnderecoDTO implements Serializable {
         this.bairro = entidade.getBairro();
         this.cidade = entidade.getCidade();
         this.estado = entidade.getEstado();
+        this.cep = entidade.getCep();
         this.latitude = entidade.getLatitude();
         this.longitude = entidade.getLongitude();
         this.createdAt = entidade.getCreatedAt();
@@ -123,6 +128,14 @@ public class EnderecoDTO implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+    
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public Double getLatitude() {

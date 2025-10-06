@@ -99,6 +99,7 @@ public class EnderecoService {
         entidade.setBairro(enderecoDTO.getBairro());
         entidade.setCidade(enderecoDTO.getCidade());
         entidade.setEstado(enderecoDTO.getEstado());
+        entidade.setCep(enderecoDTO.getCep());
         entidade.setLatitude(enderecoDTO.getLatitude());
         entidade.setLongitude(enderecoDTO.getLongitude());
     }
@@ -118,6 +119,9 @@ public class EnderecoService {
         }
         if (enderecoDTO.getEstado() != null && !enderecoDTO.getEstado().trim().isEmpty()) {
             entidade.setEstado(enderecoDTO.getEstado());
+        }
+        if (enderecoDTO.getCep() != null && !enderecoDTO.getCep().trim().isEmpty()) {
+        	entidade.setCep(enderecoDTO.getCep());
         }
         if (enderecoDTO.getLatitude() != null) {
             entidade.setLatitude(enderecoDTO.getLatitude());
