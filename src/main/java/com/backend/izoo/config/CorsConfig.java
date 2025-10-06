@@ -15,11 +15,8 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permite TODAS as origens - para desenvolvimento e produção
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        
-        // Alternativa usando patterns (se precisar de mais controle):
-        // configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // Para permitir credenciais (JWT), usamos allowedOriginPatterns ao invés de allowedOrigins
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         
         // Permite todos os métodos HTTP
         configuration.setAllowedMethods(Arrays.asList(
@@ -29,14 +26,8 @@ public class CorsConfig {
         // Permite todos os headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
-        // IMPORTANTE: Quando allowedOrigins é "*", allowCredentials deve ser false
-        configuration.setAllowCredentials(false);
-        
-        // Se você precisar de credenciais (JWT no header Authorization), use esta configuração alternativa:
-        /*
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // IMPORTANTE: Permitir credenciais para JWT funcionar
         configuration.setAllowCredentials(true);
-        */
         
         // Expõe headers para o frontend
         configuration.setExposedHeaders(Arrays.asList(

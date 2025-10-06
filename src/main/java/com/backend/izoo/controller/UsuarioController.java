@@ -1,6 +1,7 @@
 package com.backend.izoo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -91,7 +93,7 @@ public class UsuarioController {
 
     // Endpoints protegidos - CRUD completo
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
+    @PreAuthorize("hasRole('ADMIN') or authentication.name.equals(#id)")
     @Operation(
         summary = "Buscar usuário por ID",
         description = "Retorna os dados de um usuário específico. Requer autenticação e autorização.",
@@ -117,7 +119,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Listar todos os usuários",
         description = "Retorna uma lista com todos os usuários cadastrados. Requer permissão de administrador.",
@@ -134,7 +136,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/cargo")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Buscar usuários por cargo",
         description = "Retorna uma lista de usuários filtrados por cargo. Requer permissão de administrador.",
@@ -153,7 +155,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/cargo")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Alterar cargo de usuário",
         description = "Permite que administradores alterem o cargo de qualquer usuário. Requer permissão de administrador.",
@@ -183,7 +185,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
+    @PreAuthorize("hasRole('ADMIN') or authentication.name.equals(#id)")
     @Operation(
         summary = "Atualizar usuário completo",
         description = "Atualiza todos os dados de um usuário. Usuários comuns não podem alterar seu próprio cargo. Requer autenticação e autorização.",
@@ -211,7 +213,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('admin') or authentication.principal.id == #id")
+    @PreAuthorize("hasRole('ADMIN') or authentication.name.equals(#id)")
     @Operation(
         summary = "Atualizar usuário parcial",
         description = "Atualiza parcialmente os dados de um usuário. Usuários comuns não podem alterar seu próprio cargo. Requer autenticação e autorização.",
@@ -239,7 +241,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Deletar usuário",
         description = "Remove um usuário do sistema. Requer permissão de administrador.",
@@ -261,6 +263,37 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("Erro ao deletar usuário: " + e.getMessage()));
+        }
+    }
+
+    // Endpoint de teste para verificar autenticação
+    @GetMapping("/teste-auth")
+    @Operation(
+        summary = "Testar autenticação",
+        description = "Endpoint para testar se a autenticação JWT está funcionando. Retorna informações do usuário autenticado.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Autenticação funcionando",
+                content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "401", description = "Token inválido ou ausente")
+    })
+    public ResponseEntity<?> testeAuth(HttpServletRequest request) {
+        try {
+            String userId = (String) request.getAttribute("userId");
+            String login = (String) request.getAttribute("login");
+            String cargo = (String) request.getAttribute("cargo");
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Autenticação funcionando!",
+                "userId", userId != null ? userId : "N/A",
+                "login", login != null ? login : "N/A",
+                "cargo", cargo != null ? cargo : "N/A",
+                "timestamp", System.currentTimeMillis()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Erro no teste de autenticação: " + e.getMessage()));
         }
     }
 

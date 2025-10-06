@@ -32,6 +32,9 @@ public class SwaggerConfig {
                 .addServersItem(new Server()
                         .url("http://localhost:8080")
                         .description("Servidor de Desenvolvimento"))
+                .addServersItem(new Server()
+                        .url("https://localhost:8080")
+                        .description("Servidor de Desenvolvimento HTTPS"))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", 
