@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -165,23 +167,6 @@ public class UsuarioService {
         return lista.stream().map(UsuarioDTO::new).toList();
     }
 
-    public UsuarioDTO alterarCargo(String id, String novoCargo) {
-        // Validar se o cargo é válido
-        if (!novoCargo.matches("ADMIN|USER|AGENT")) {
-            throw new RuntimeException("Cargo inválido. Deve ser 'ADMIN', 'USER' ou 'AGENT'");
-        }
-
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
-        if (usuarioOpt.isPresent()) {
-            Usuario entidade = usuarioOpt.get();
-            entidade.setCargo(novoCargo);
-            entidade.setUpdatedAt(Instant.now());
-            entidade = usuarioRepository.save(entidade);
-            return new UsuarioDTO(entidade);
-        }
-        throw new RuntimeException("Usuário não encontrado com id: " + id);
-    }
-
     private void copiaDTOparaEntidade(UsuarioDTO usuarioDTO, Usuario entidade) {
         entidade.setLogin(usuarioDTO.getLogin());
         // Se cargo não for fornecido ou for vazio, usar USER como padrão
@@ -209,7 +194,26 @@ public class UsuarioService {
             }
             entidade.setLogin(usuarioDTO.getLogin());
         }
-        // Remover alteração de cargo deste método - deve ser feito apenas pelo endpoint específico para admins
+        
+        // Permitir alteração de cargo apenas para administradores
+        if (usuarioDTO.getCargo() != null && !usuarioDTO.getCargo().trim().isEmpty()) {
+            // Verificar se o usuário atual é administrador
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            
+            if (isAdmin) {
+                String cargoUpper = usuarioDTO.getCargo().toUpperCase();
+                // Validar se o cargo é válido
+                if (!cargoUpper.matches("ADMIN|USER|AGENT")) {
+                    throw new RuntimeException("Cargo inválido. Deve ser 'ADMIN', 'USER' ou 'AGENT'");
+                }
+                entidade.setCargo(cargoUpper);
+            } else {
+                throw new RuntimeException("Apenas administradores podem alterar cargo de usuários");
+            }
+        }
+        
         if (usuarioDTO.getEmail() != null && !usuarioDTO.getEmail().trim().isEmpty()) {
             // Verificar se novo email já existe
             if (!entidade.getEmail().equals(usuarioDTO.getEmail()) && 

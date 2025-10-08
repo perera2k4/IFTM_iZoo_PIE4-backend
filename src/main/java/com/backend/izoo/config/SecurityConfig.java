@@ -54,7 +54,6 @@ public class SecurityConfig {
                 
                 // Endpoints que requerem autenticação
                 .requestMatchers(HttpMethod.GET, "/usuario/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/usuario/**").authenticated()
                 .requestMatchers(HttpMethod.PATCH, "/usuario/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasRole("ADMIN")
                 
