@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -244,5 +245,42 @@ public class EnderecoController {
     public ResponseEntity<List<EnderecoDTO>> buscarComLocalizacao() {
         List<EnderecoDTO> lista = enderecoService.buscarComLocalizacao();
         return ResponseEntity.ok().body(lista);
+    }
+
+    @GetMapping("/deletados")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+        summary = "Listar endereços deletados",
+        description = "Busca histórico de endereços que foram deletados (soft delete). Acesso restrito a administradores."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de endereços deletados encontrada"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas administradores")
+    })
+    public ResponseEntity<?> buscarEnderecosDeletados() {
+        try {
+            var enderecosDeletados = enderecoService.buscarEnderecosDeletados();
+            return ResponseEntity.ok(enderecosDeletados);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    // Classe interna para respostas de erro
+    public static class ErrorResponse {
+        private String error;
+
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
     }
 }

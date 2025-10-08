@@ -238,6 +238,28 @@ public class UsuarioController {
         }
     }
 
+    // Endpoint para histórico de usuários deletados (apenas admins)
+    @GetMapping("/deletados")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+        summary = "Listar usuários deletados",
+        description = "Busca histórico de usuários que foram deletados (soft delete). Acesso restrito a administradores."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuários deletados encontrada"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas administradores")
+    })
+    public ResponseEntity<?> buscarUsuariosDeletados() {
+        try {
+            var usuariosDeletados = usuarioService.buscarUsuariosDeletados();
+            return ResponseEntity.ok(usuariosDeletados);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     // Classes internas para respostas padronizadas
     public static class ErrorResponse {
         private String error;

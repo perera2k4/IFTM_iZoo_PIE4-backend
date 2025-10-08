@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.backend.izoo.dto.EnderecoDTO;
 import com.backend.izoo.model.Endereco;
+import com.backend.izoo.model.EnderecoDeletado;
 import com.backend.izoo.repositories.EnderecoRepository;
+import com.backend.izoo.repositories.EnderecoDeletadoRepository;
 
 import jakarta.validation.Valid;
 
@@ -18,6 +22,9 @@ public class EnderecoService {
 
     @Autowired
     private EnderecoRepository enderecoRepository;
+
+    @Autowired
+    private EnderecoDeletadoRepository enderecoDeletadoRepository;
 
     public EnderecoDTO buscarPorId(String id) {
         Optional<Endereco> endereco = enderecoRepository.findById(id);
@@ -65,12 +72,48 @@ public class EnderecoService {
         throw new RuntimeException("Endereço não encontrado com id: " + id);
     }
 
+    /**
+     * Soft delete - Move endereço para coleção de backup antes de deletar
+     */
     public void deletar(String id) {
-        if (enderecoRepository.existsById(id)) {
+        Optional<Endereco> enderecoOpt = enderecoRepository.findById(id);
+        if (enderecoOpt.isPresent()) {
+            Endereco endereco = enderecoOpt.get();
+            
+            // Obter usuário atual que está fazendo a deleção
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String deletedBy = auth != null ? auth.getName() : "System";
+            
+            // Criar backup do endereço
+            EnderecoDeletado enderecoDeletado = new EnderecoDeletado(
+                endereco, 
+                deletedBy, 
+                "Endereço deletado via API"
+            );
+            
+            // Salvar no backup
+            enderecoDeletadoRepository.save(enderecoDeletado);
+            
+            // Deletar da coleção principal
             enderecoRepository.deleteById(id);
         } else {
             throw new RuntimeException("Endereço não encontrado com id: " + id);
         }
+    }
+
+    /**
+     * Buscar histórico de endereços deletados (apenas para admins)
+     */
+    public List<EnderecoDeletado> buscarEnderecosDeletados() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin) {
+            throw new RuntimeException("Apenas administradores podem acessar histórico de endereços deletados");
+        }
+        
+        return enderecoDeletadoRepository.findAllOrderByDeletedAtDesc();
     }
 
     public List<EnderecoDTO> buscarPorCidade(String cidade) {

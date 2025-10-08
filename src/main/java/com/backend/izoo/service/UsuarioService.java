@@ -15,7 +15,9 @@ import com.backend.izoo.dto.LoginRequestDTO;
 import com.backend.izoo.dto.LoginResponseDTO;
 import com.backend.izoo.dto.UsuarioDTO;
 import com.backend.izoo.model.Usuario;
+import com.backend.izoo.model.UsuarioDeletado;
 import com.backend.izoo.repositories.UsuarioRepository;
+import com.backend.izoo.repositories.UsuarioDeletadoRepository;
 
 import jakarta.validation.Valid;
 
@@ -24,6 +26,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioDeletadoRepository usuarioDeletadoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -154,12 +159,48 @@ public class UsuarioService {
         throw new RuntimeException("Usuário não encontrado com id: " + id);
     }
 
+    /**
+     * Soft delete - Move usuário para coleção de backup antes de deletar
+     */
     public void deletar(String id) {
-        if (usuarioRepository.existsById(id)) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            
+            // Obter usuário atual que está fazendo a deleção
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String deletedBy = auth != null ? auth.getName() : "System";
+            
+            // Criar backup do usuário
+            UsuarioDeletado usuarioDeletado = new UsuarioDeletado(
+                usuario, 
+                deletedBy, 
+                "Usuário deletado via API"
+            );
+            
+            // Salvar no backup
+            usuarioDeletadoRepository.save(usuarioDeletado);
+            
+            // Deletar da coleção principal
             usuarioRepository.deleteById(id);
         } else {
             throw new RuntimeException("Usuário não encontrado com id: " + id);
         }
+    }
+
+    /**
+     * Buscar histórico de usuários deletados (apenas para admins)
+     */
+    public List<UsuarioDeletado> buscarUsuariosDeletados() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isAdmin) {
+            throw new RuntimeException("Apenas administradores podem acessar histórico de usuários deletados");
+        }
+        
+        return usuarioDeletadoRepository.findAllOrderByDeletedAtDesc();
     }
 
     public List<UsuarioDTO> buscarPorCargo(String cargo) {
