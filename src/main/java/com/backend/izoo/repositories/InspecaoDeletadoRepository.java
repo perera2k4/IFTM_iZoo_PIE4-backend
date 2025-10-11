@@ -24,8 +24,8 @@ public interface InspecaoDeletadoRepository extends MongoRepository<InspecaoDele
     // Buscar por tipo (para histórico)
     List<InspecaoDeletado> findByTipoIgnoreCase(String tipo);
     
-    // Buscar por bairro
-    List<InspecaoDeletado> findByBairroIgnoreCase(String bairro);
+    // Buscar por endereço ID
+    List<InspecaoDeletado> findByEnderecoId(String enderecoId);
     
     // Buscar por gravidade
     List<InspecaoDeletado> findByGravidadeIgnoreCase(String gravidade);

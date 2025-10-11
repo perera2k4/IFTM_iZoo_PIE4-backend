@@ -13,8 +13,8 @@ public class InspecaoDTO {
     @NotBlank(message = "Tipo é obrigatório")
     private String tipo;
     
-    @NotBlank(message = "Bairro é obrigatório")
-    private String bairro;
+    @NotBlank(message = "Endereço ID é obrigatório")
+    private String enderecoId;
     
     @NotBlank(message = "Gravidade é obrigatória")
     private String gravidade;
@@ -31,7 +31,7 @@ public class InspecaoDTO {
     public InspecaoDTO(Inspecao entidade) {
         this.id = entidade.getId();
         this.tipo = entidade.getTipo();
-        this.bairro = entidade.getBairro();
+        this.enderecoId = entidade.getEnderecoId();
         this.gravidade = entidade.getGravidade();
         this.status = entidade.getStatus();
         this.createdAt = entidade.getCreatedAt();
@@ -55,12 +55,12 @@ public class InspecaoDTO {
         this.tipo = tipo;
     }
     
-    public String getBairro() {
-        return bairro;
+    public String getEnderecoId() {
+        return enderecoId;
     }
     
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
+    public void setEnderecoId(String enderecoId) {
+        this.enderecoId = enderecoId;
     }
     
     public String getGravidade() {

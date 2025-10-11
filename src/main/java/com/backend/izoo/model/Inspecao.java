@@ -17,8 +17,8 @@ public class Inspecao {
     @NotBlank(message = "Tipo é obrigatório")
     private String tipo; // Foco de dengue, animal peçonhento, roedores, outros
     
-    @NotBlank(message = "Bairro é obrigatório")
-    private String bairro;
+    @NotBlank(message = "Endereço ID é obrigatório")
+    private String enderecoId;
     
     @NotBlank(message = "Gravidade é obrigatória")
     private String gravidade; // baixa, moderada, alta, gravissima
@@ -34,9 +34,9 @@ public class Inspecao {
     // Construtores
     public Inspecao() {}
     
-    public Inspecao(String tipo, String bairro, String gravidade, String status) {
+    public Inspecao(String tipo, String enderecoId, String gravidade, String status) {
         this.tipo = tipo;
-        this.bairro = bairro;
+        this.enderecoId = enderecoId;
         this.gravidade = gravidade;
         this.status = status;
         this.createdAt = Instant.now();
@@ -60,12 +60,12 @@ public class Inspecao {
         this.tipo = tipo;
     }
     
-    public String getBairro() {
-        return bairro;
+    public String getEnderecoId() {
+        return enderecoId;
     }
     
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
+    public void setEnderecoId(String enderecoId) {
+        this.enderecoId = enderecoId;
     }
     
     public String getGravidade() {

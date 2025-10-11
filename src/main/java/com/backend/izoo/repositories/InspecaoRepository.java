@@ -14,8 +14,8 @@ public interface InspecaoRepository extends MongoRepository<Inspecao, String> {
     // Buscar por tipo
     List<Inspecao> findByTipoIgnoreCase(String tipo);
     
-    // Buscar por bairro
-    List<Inspecao> findByBairroIgnoreCase(String bairro);
+    // Buscar por endereço ID
+    List<Inspecao> findByEnderecoId(String enderecoId);
     
     // Buscar por gravidade
     List<Inspecao> findByGravidadeIgnoreCase(String gravidade);
@@ -23,8 +23,8 @@ public interface InspecaoRepository extends MongoRepository<Inspecao, String> {
     // Buscar por status
     List<Inspecao> findByStatusIgnoreCase(String status);
     
-    // Buscar por tipo e bairro
-    List<Inspecao> findByTipoIgnoreCaseAndBairroIgnoreCase(String tipo, String bairro);
+    // Buscar por tipo e endereço ID
+    List<Inspecao> findByTipoIgnoreCaseAndEnderecoId(String tipo, String enderecoId);
     
     // Buscar por status e gravidade
     List<Inspecao> findByStatusIgnoreCaseAndGravidadeIgnoreCase(String status, String gravidade);
@@ -32,6 +32,6 @@ public interface InspecaoRepository extends MongoRepository<Inspecao, String> {
     // Buscar por período de criação
     List<Inspecao> findByCreatedAtBetween(Instant startDate, Instant endDate);
     
-    // Buscar por bairro e status
-    List<Inspecao> findByBairroIgnoreCaseAndStatusIgnoreCase(String bairro, String status);
+    // Buscar por endereço ID e status
+    List<Inspecao> findByEnderecoIdAndStatusIgnoreCase(String enderecoId, String status);
 }

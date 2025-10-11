@@ -14,7 +14,7 @@ public class InspecaoDeletado {
     // Dados originais da inspeção
     private String originalId;
     private String tipo;
-    private String bairro;
+    private String enderecoId;
     private String gravidade;
     private String status;
     private Instant createdAt;
@@ -31,7 +31,7 @@ public class InspecaoDeletado {
     public InspecaoDeletado(Inspecao inspecao, String deletedBy, String deleteReason) {
         this.originalId = inspecao.getId();
         this.tipo = inspecao.getTipo();
-        this.bairro = inspecao.getBairro();
+        this.enderecoId = inspecao.getEnderecoId();
         this.gravidade = inspecao.getGravidade();
         this.status = inspecao.getStatus();
         this.createdAt = inspecao.getCreatedAt();
@@ -66,12 +66,12 @@ public class InspecaoDeletado {
         this.tipo = tipo;
     }
     
-    public String getBairro() {
-        return bairro;
+    public String getEnderecoId() {
+        return enderecoId;
     }
     
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
+    public void setEnderecoId(String enderecoId) {
+        this.enderecoId = enderecoId;
     }
     
     public String getGravidade() {

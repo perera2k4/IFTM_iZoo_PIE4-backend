@@ -170,20 +170,20 @@ public class InspecaoController {
         return ResponseEntity.ok().body(lista);
     }
 
-    @GetMapping("/bairro/{bairro}")
+    @GetMapping("/endereco/{enderecoId}")
     @Operation(
-        summary = "Buscar inspeções por bairro",
-        description = "Retorna lista de inspeções filtradas por bairro. Requer autenticação."
+        summary = "Buscar inspeções por endereço ID",
+        description = "Retorna lista de inspeções filtradas por endereço ID. Requer autenticação."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de inspeções filtrada por bairro",
+        @ApiResponse(responseCode = "200", description = "Lista de inspeções filtrada por endereço ID",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
         @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
     })
-    public ResponseEntity<List<InspecaoDTO>> buscarPorBairro(
-            @Parameter(description = "Nome do bairro", required = true) 
-            @PathVariable String bairro) {
-        List<InspecaoDTO> lista = inspecaoService.buscarPorBairro(bairro);
+    public ResponseEntity<List<InspecaoDTO>> buscarPorEnderecoId(
+            @Parameter(description = "ID do endereço", required = true) 
+            @PathVariable String enderecoId) {
+        List<InspecaoDTO> lista = inspecaoService.buscarPorEnderecoId(enderecoId);
         return ResponseEntity.ok().body(lista);
     }
 
@@ -223,20 +223,20 @@ public class InspecaoController {
 
     @GetMapping("/filtro")
     @Operation(
-        summary = "Buscar inspeções por bairro e status",
-        description = "Retorna lista de inspeções filtradas por bairro e status. Requer autenticação."
+        summary = "Buscar inspeções por endereço ID e status",
+        description = "Retorna lista de inspeções filtradas por endereço ID e status. Requer autenticação."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de inspeções filtrada",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
         @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
     })
-    public ResponseEntity<List<InspecaoDTO>> buscarPorBairroEStatus(
-            @Parameter(description = "Nome do bairro", required = true) 
-            @RequestParam String bairro,
+    public ResponseEntity<List<InspecaoDTO>> buscarPorEnderecoIdEStatus(
+            @Parameter(description = "ID do endereço", required = true) 
+            @RequestParam String enderecoId,
             @Parameter(description = "Status da inspeção", required = true) 
             @RequestParam String status) {
-        List<InspecaoDTO> lista = inspecaoService.buscarPorBairroEStatus(bairro, status);
+        List<InspecaoDTO> lista = inspecaoService.buscarPorEnderecoIdEStatus(enderecoId, status);
         return ResponseEntity.ok().body(lista);
     }
 

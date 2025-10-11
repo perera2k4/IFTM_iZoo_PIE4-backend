@@ -121,8 +121,8 @@ public class InspecaoService {
         return lista.stream().map(InspecaoDTO::new).toList();
     }
 
-    public List<InspecaoDTO> buscarPorBairro(String bairro) {
-        List<Inspecao> lista = inspecaoRepository.findByBairroIgnoreCase(bairro);
+    public List<InspecaoDTO> buscarPorEnderecoId(String enderecoId) {
+        List<Inspecao> lista = inspecaoRepository.findByEnderecoId(enderecoId);
         return lista.stream().map(InspecaoDTO::new).toList();
     }
 
@@ -136,14 +136,14 @@ public class InspecaoService {
         return lista.stream().map(InspecaoDTO::new).toList();
     }
 
-    public List<InspecaoDTO> buscarPorBairroEStatus(String bairro, String status) {
-        List<Inspecao> lista = inspecaoRepository.findByBairroIgnoreCaseAndStatusIgnoreCase(bairro, status);
+    public List<InspecaoDTO> buscarPorEnderecoIdEStatus(String enderecoId, String status) {
+        List<Inspecao> lista = inspecaoRepository.findByEnderecoIdAndStatusIgnoreCase(enderecoId, status);
         return lista.stream().map(InspecaoDTO::new).toList();
     }
 
     private void copiaDTOparaEntidade(InspecaoDTO inspecaoDTO, Inspecao entidade) {
         entidade.setTipo(inspecaoDTO.getTipo());
-        entidade.setBairro(inspecaoDTO.getBairro());
+        entidade.setEnderecoId(inspecaoDTO.getEnderecoId());
         entidade.setGravidade(inspecaoDTO.getGravidade());
         entidade.setStatus(inspecaoDTO.getStatus());
     }
@@ -152,8 +152,8 @@ public class InspecaoService {
         if (inspecaoDTO.getTipo() != null && !inspecaoDTO.getTipo().trim().isEmpty()) {
             entidade.setTipo(inspecaoDTO.getTipo());
         }
-        if (inspecaoDTO.getBairro() != null && !inspecaoDTO.getBairro().trim().isEmpty()) {
-            entidade.setBairro(inspecaoDTO.getBairro());
+        if (inspecaoDTO.getEnderecoId() != null && !inspecaoDTO.getEnderecoId().trim().isEmpty()) {
+            entidade.setEnderecoId(inspecaoDTO.getEnderecoId());
         }
         if (inspecaoDTO.getGravidade() != null && !inspecaoDTO.getGravidade().trim().isEmpty()) {
             entidade.setGravidade(inspecaoDTO.getGravidade());
