@@ -6,6 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+
 /**
  * Serviço para envio de emails
  */
@@ -17,6 +19,21 @@ public class EmailService {
 
     @Value("${spring.mail.username:noreply@izoo.com}")
     private String remetenteEmail;
+    
+    @Value("${spring.mail.host:smtp.gmail.com}")
+    private String smtpHost;
+    
+    @Value("${spring.mail.port:465}")
+    private String smtpPort;
+    
+    @PostConstruct
+    public void init() {
+        System.out.println("=== CONFIGURAÇÃO DE EMAIL ===");
+        System.out.println("SMTP Host: " + smtpHost);
+        System.out.println("SMTP Port: " + smtpPort);
+        System.out.println("Email Remetente: " + remetenteEmail);
+        System.out.println("============================");
+    }
 
     /**
      * Envia email de recuperação de senha com código
@@ -27,21 +44,41 @@ public class EmailService {
      */
     public void enviarEmailRecuperacaoSenha(String destinatario, String login, String codigo) {
         try {
+            System.out.println(">>> Iniciando envio de email de recuperação");
+            System.out.println(">>> De: " + remetenteEmail);
+            System.out.println(">>> Para: " + destinatario);
+            System.out.println(">>> Assunto: iZoo - Recuperação de Senha");
+            
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(remetenteEmail);
             message.setTo(destinatario);
             message.setSubject("iZoo - Recuperação de Senha");
             message.setText(construirCorpoEmail(login, codigo));
             
-            System.out.println("Tentando enviar email de: " + remetenteEmail + " para: " + destinatario);
-            mailSender.send(message);
+            System.out.println(">>> Tentando enviar email via SMTP " + smtpHost + ":" + smtpPort);
             
-            System.out.println("Email de recuperação enviado com sucesso para: " + destinatario);
-        } catch (Exception e) {
-            System.err.println("Erro ao enviar email: " + e.getMessage());
-            System.err.println("Detalhes do erro: " + e.getClass().getName());
+            long startTime = System.currentTimeMillis();
+            mailSender.send(message);
+            long endTime = System.currentTimeMillis();
+            
+            System.out.println(">>> ✅ Email enviado com sucesso em " + (endTime - startTime) + "ms");
+        } catch (org.springframework.mail.MailAuthenticationException e) {
+            System.err.println(">>> ❌ ERRO DE AUTENTICAÇÃO SMTP");
+            System.err.println(">>> Verifique SMTP_USERNAME e SMTP_PASSWORD no Render");
+            System.err.println(">>> Detalhes: " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException("Erro ao enviar email de recuperação: " + e.getMessage(), e);
+            throw new RuntimeException("Falha na autenticação SMTP. Verifique as credenciais.", e);
+        } catch (org.springframework.mail.MailSendException e) {
+            System.err.println(">>> ❌ ERRO AO ENVIAR EMAIL");
+            System.err.println(">>> Detalhes: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Falha ao enviar email: " + e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println(">>> ❌ ERRO DESCONHECIDO AO ENVIAR EMAIL");
+            System.err.println(">>> Tipo: " + e.getClass().getName());
+            System.err.println(">>> Mensagem: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro inesperado ao enviar email: " + e.getMessage(), e);
         }
     }
 

@@ -61,12 +61,27 @@ public class RecuperarSenhaService {
 
         // Envia email com o login do usuário
         try {
+            System.out.println("=== INICIANDO ENVIO DE EMAIL ===");
+            System.out.println("Destinatário: " + email);
+            System.out.println("Login: " + usuario.getLogin());
+            System.out.println("Código: " + codigo);
+            
             emailService.enviarEmailRecuperacaoSenha(email, usuario.getLogin(), codigo);
+            
+            System.out.println("=== EMAIL ENVIADO COM SUCESSO ===");
             return true;
         } catch (Exception e) {
+            System.err.println("=== ERRO AO ENVIAR EMAIL ===");
+            System.err.println("Tipo de erro: " + e.getClass().getName());
+            System.err.println("Mensagem: " + e.getMessage());
+            System.err.println("Stack trace:");
+            e.printStackTrace();
+            
             // Se falhar ao enviar email, remove o token
             tokenRepository.delete(token);
-            throw new RuntimeException("Erro ao enviar email de recuperação", e);
+            
+            // Lança exceção com mais detalhes
+            throw new RuntimeException("Erro ao enviar email de recuperação: " + e.getMessage(), e);
         }
     }
 
