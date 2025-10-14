@@ -33,12 +33,15 @@ public class EmailService {
             message.setSubject("iZoo - Recuperação de Senha");
             message.setText(construirCorpoEmail(login, codigo));
             
+            System.out.println("Tentando enviar email de: " + remetenteEmail + " para: " + destinatario);
             mailSender.send(message);
             
-            System.out.println("Email de recuperação enviado para: " + destinatario);
+            System.out.println("Email de recuperação enviado com sucesso para: " + destinatario);
         } catch (Exception e) {
             System.err.println("Erro ao enviar email: " + e.getMessage());
-            throw new RuntimeException("Erro ao enviar email de recuperação", e);
+            System.err.println("Detalhes do erro: " + e.getClass().getName());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao enviar email de recuperação: " + e.getMessage(), e);
         }
     }
 

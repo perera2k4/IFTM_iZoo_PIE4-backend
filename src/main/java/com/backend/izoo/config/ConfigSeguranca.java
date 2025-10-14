@@ -52,6 +52,9 @@ public class ConfigSeguranca {
                 // Endpoints de recuperação de senha (públicos)
                 .requestMatchers("/recuperacao-senha/**").permitAll()
                 
+                // Endpoints de teste (REMOVER EM PRODUÇÃO)
+                .requestMatchers("/test/**").permitAll()
+                
                 // Swagger/OpenAPI endpoints
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                 
