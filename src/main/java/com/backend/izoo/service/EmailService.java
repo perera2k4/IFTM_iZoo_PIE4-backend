@@ -22,15 +22,16 @@ public class EmailService {
      * Envia email de recuperação de senha com código
      * 
      * @param destinatario Email do destinatário
+     * @param login Login do usuário
      * @param codigo Código de recuperação de 6 dígitos
      */
-    public void enviarEmailRecuperacaoSenha(String destinatario, String codigo) {
+    public void enviarEmailRecuperacaoSenha(String destinatario, String login, String codigo) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(remetenteEmail);
             message.setTo(destinatario);
             message.setSubject("iZoo - Recuperação de Senha");
-            message.setText(construirCorpoEmail(codigo));
+            message.setText(construirCorpoEmail(login, codigo));
             
             mailSender.send(message);
             
@@ -44,9 +45,9 @@ public class EmailService {
     /**
      * Constrói o corpo do email com o código de recuperação
      */
-    private String construirCorpoEmail(String codigo) {
+    private String construirCorpoEmail(String login, String codigo) {
         return """
-                Olá tudo bem?
+                Olá %s, tudo bem?
                 
                 O código de recuperação é: %s, e é válido por 15 minutos!
                 
@@ -54,7 +55,7 @@ public class EmailService {
                 
                 Atenciosamente,
                 Equipe iZoo
-                """.formatted(codigo);
+                """.formatted(login, codigo);
     }
 
     /**

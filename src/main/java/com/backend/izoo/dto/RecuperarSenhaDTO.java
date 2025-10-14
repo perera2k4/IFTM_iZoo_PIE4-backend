@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 /**
  * DTO para redefinição de senha com token
  */
-public class ResetPasswordDTO {
+public class RecuperarSenhaDTO {
     
     @NotBlank(message = "Token é obrigatório")
     private String token;
@@ -15,9 +15,9 @@ public class ResetPasswordDTO {
     @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
     private String novaSenha;
 
-    public ResetPasswordDTO() {}
+    public RecuperarSenhaDTO() {}
 
-    public ResetPasswordDTO(String token, String novaSenha) {
+    public RecuperarSenhaDTO(String token, String novaSenha) {
         this.token = token;
         this.novaSenha = novaSenha;
     }

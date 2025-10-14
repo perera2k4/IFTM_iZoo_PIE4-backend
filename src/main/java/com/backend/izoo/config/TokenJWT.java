@@ -16,7 +16,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 
 @Component
-public class JwtTokenProvider {
+public class TokenJWT {
 
     @Value("${jwt.secret}")
     private String jwtSecret;

@@ -10,9 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.backend.izoo.config.JwtTokenProvider;
-import com.backend.izoo.dto.LoginRequestDTO;
-import com.backend.izoo.dto.LoginResponseDTO;
+import com.backend.izoo.config.TokenJWT;
+import com.backend.izoo.dto.SolicitacaoLoginDTO;
+import com.backend.izoo.dto.RespostaLoginDTO;
 import com.backend.izoo.dto.UsuarioDTO;
 import com.backend.izoo.model.Usuario;
 import com.backend.izoo.model.UsuarioDeletado;
@@ -34,7 +34,7 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private TokenJWT jwtTokenProvider;
 
     public UsuarioDTO buscarPorId(String id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -85,7 +85,7 @@ public class UsuarioService {
         return new UsuarioDTO(entidade);
     }
 
-    public LoginResponseDTO login(@Valid LoginRequestDTO loginRequest) {
+    public RespostaLoginDTO login(@Valid SolicitacaoLoginDTO loginRequest) {
         // Buscar usuário por login
         Optional<Usuario> usuarioOpt = usuarioRepository.findByLogin(loginRequest.getLogin());
         
@@ -108,7 +108,7 @@ public class UsuarioService {
         );
 
         UsuarioDTO usuarioDTO = new UsuarioDTO(usuario);
-        return new LoginResponseDTO("Login realizado com sucesso", token, usuarioDTO);
+        return new RespostaLoginDTO("Login realizado com sucesso", token, usuarioDTO);
     }
 
     public UsuarioDTO atualizar(String id, @Valid UsuarioDTO usuarioDTO) {

@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.izoo.dto.LoginRequestDTO;
-import com.backend.izoo.dto.LoginResponseDTO;
+import com.backend.izoo.dto.SolicitacaoLoginDTO;
+import com.backend.izoo.dto.RespostaLoginDTO;
 import com.backend.izoo.dto.UsuarioDTO;
 import com.backend.izoo.service.UsuarioService;
 
@@ -74,15 +74,15 @@ public class UsuarioController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login realizado com sucesso",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = RespostaLoginDTO.class))),
         @ApiResponse(responseCode = "401", description = "Credenciais inválidas",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<?> login(
             @Parameter(description = "Credenciais de login", required = true)
-            @Valid @RequestBody LoginRequestDTO loginRequest) {
+            @Valid @RequestBody SolicitacaoLoginDTO loginRequest) {
         try {
-            LoginResponseDTO response = usuarioService.login(loginRequest);
+            RespostaLoginDTO response = usuarioService.login(loginRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

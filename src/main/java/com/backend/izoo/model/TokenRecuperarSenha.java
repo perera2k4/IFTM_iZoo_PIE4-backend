@@ -14,8 +14,8 @@ import jakarta.validation.constraints.NotBlank;
  * Modelo para armazenar tokens de recuperação de senha
  * Cada token é válido por 15 minutos
  */
-@Document(collection = "password_reset_tokens")
-public class PasswordResetToken implements Serializable {
+@Document(collection = "tokens_recuperacao_senha")
+public class TokenRecuperarSenha implements Serializable {
     private static final long serialVersionUID = 1L;
     
     // Tempo de expiração: 15 minutos
@@ -39,9 +39,9 @@ public class PasswordResetToken implements Serializable {
     @CreatedDate
     private Instant createdAt;
 
-    public PasswordResetToken() {}
+    public TokenRecuperarSenha() {}
 
-    public PasswordResetToken(String token, String email) {
+    public TokenRecuperarSenha(String token, String email) {
         this.token = token;
         this.email = email;
         this.expiryDate = Instant.now().plusMillis(EXPIRATION_TIME_MS);

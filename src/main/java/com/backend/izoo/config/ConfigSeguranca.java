@@ -19,10 +19,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
+public class ConfigSeguranca {
 
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private FiltroAutenticacaoJWT jwtAuthenticationFilter;
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;

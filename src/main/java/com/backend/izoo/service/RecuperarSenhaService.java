@@ -9,19 +9,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backend.izoo.model.PasswordResetToken;
+import com.backend.izoo.model.TokenRecuperarSenha;
 import com.backend.izoo.model.Usuario;
-import com.backend.izoo.repositories.PasswordResetTokenRepository;
+import com.backend.izoo.repositories.TokenRecuperarSenhaRepository;
 import com.backend.izoo.repositories.UsuarioRepository;
 
 /**
  * Serviço para gerenciamento de recuperação de senha
  */
 @Service
-public class PasswordResetService {
+public class RecuperarSenhaService {
 
     @Autowired
-    private PasswordResetTokenRepository tokenRepository;
+    private TokenRecuperarSenhaRepository tokenRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -47,6 +47,8 @@ public class PasswordResetService {
             throw new RuntimeException("Usuário não encontrado com o email: " + email);
         }
 
+        Usuario usuario = usuarioOpt.get();
+
         // Invalida tokens anteriores do mesmo email (opcional, mas recomendado)
         invalidarTokensAntigos(email);
 
@@ -54,12 +56,12 @@ public class PasswordResetService {
         String codigo = gerarCodigoRecuperacao();
 
         // Cria o token no banco
-        PasswordResetToken token = new PasswordResetToken(codigo, email);
+        TokenRecuperarSenha token = new TokenRecuperarSenha(codigo, email);
         tokenRepository.save(token);
 
-        // Envia email
+        // Envia email com o login do usuário
         try {
-            emailService.enviarEmailRecuperacaoSenha(email, codigo);
+            emailService.enviarEmailRecuperacaoSenha(email, usuario.getLogin(), codigo);
             return true;
         } catch (Exception e) {
             // Se falhar ao enviar email, remove o token
@@ -75,13 +77,13 @@ public class PasswordResetService {
      * @return true se o token é válido
      */
     public boolean validarToken(String tokenValue) {
-        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(tokenValue);
+        Optional<TokenRecuperarSenha> tokenOpt = tokenRepository.findByToken(tokenValue);
         
         if (tokenOpt.isEmpty()) {
             return false;
         }
 
-        PasswordResetToken token = tokenOpt.get();
+        TokenRecuperarSenha token = tokenOpt.get();
         return token.isValid();
     }
 
@@ -96,13 +98,13 @@ public class PasswordResetService {
     @Transactional
     public boolean redefinirSenha(String tokenValue, String novaSenha) {
         // Busca o token
-        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(tokenValue);
+        Optional<TokenRecuperarSenha> tokenOpt = tokenRepository.findByToken(tokenValue);
         
         if (tokenOpt.isEmpty()) {
             throw new RuntimeException("Token inválido");
         }
 
-        PasswordResetToken token = tokenOpt.get();
+        TokenRecuperarSenha token = tokenOpt.get();
 
         // Verifica se o token é válido
         if (!token.isValid()) {

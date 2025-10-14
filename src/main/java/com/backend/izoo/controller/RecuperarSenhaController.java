@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.backend.izoo.dto.PasswordResetRequestDTO;
-import com.backend.izoo.dto.ResetPasswordDTO;
-import com.backend.izoo.dto.ValidateTokenDTO;
-import com.backend.izoo.service.PasswordResetService;
+import com.backend.izoo.dto.SolicitacaoRecuperarSenhaDTO;
+import com.backend.izoo.dto.RecuperarSenhaDTO;
+import com.backend.izoo.dto.ValidarTokenDTO;
+import com.backend.izoo.service.RecuperarSenhaService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,10 +22,10 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/recuperacao-senha")
 @Tag(name = "Recuperação de Senha", description = "Endpoints para recuperação de senha com código de verificação por email")
-public class PasswordResetController {
+public class RecuperarSenhaController {
 
     @Autowired
-    private PasswordResetService passwordResetService;
+    private RecuperarSenhaService passwordResetService;
 
     /**
      * Solicita recuperação de senha - envia código por email
@@ -38,7 +38,7 @@ public class PasswordResetController {
         @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
         @ApiResponse(responseCode = "500", description = "Erro ao enviar email")
     })
-    public ResponseEntity<?> solicitarRecuperacao(@Valid @RequestBody PasswordResetRequestDTO request) {
+    public ResponseEntity<?> solicitarRecuperacao(@Valid @RequestBody SolicitacaoRecuperarSenhaDTO request) {
         try {
             passwordResetService.solicitarRecuperacaoSenha(request.getEmail());
             return ResponseEntity.ok(new SuccessResponse(
@@ -64,7 +64,7 @@ public class PasswordResetController {
         @ApiResponse(responseCode = "200", description = "Token válido"),
         @ApiResponse(responseCode = "400", description = "Token inválido ou expirado")
     })
-    public ResponseEntity<?> validarToken(@Valid @RequestBody ValidateTokenDTO request) {
+    public ResponseEntity<?> validarToken(@Valid @RequestBody ValidarTokenDTO request) {
         boolean isValid = passwordResetService.validarToken(request.getToken());
         
         if (isValid) {
@@ -86,7 +86,7 @@ public class PasswordResetController {
         @ApiResponse(responseCode = "400", description = "Token inválido ou expirado"),
         @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<?> redefinirSenha(@Valid @RequestBody ResetPasswordDTO request) {
+    public ResponseEntity<?> redefinirSenha(@Valid @RequestBody RecuperarSenhaDTO request) {
         try {
             passwordResetService.redefinirSenha(request.getToken(), request.getNovaSenha());
             return ResponseEntity.ok(new SuccessResponse("Senha redefinida com sucesso"));

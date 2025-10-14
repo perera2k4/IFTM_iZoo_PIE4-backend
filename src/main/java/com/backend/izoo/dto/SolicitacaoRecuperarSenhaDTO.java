@@ -6,15 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO para requisição de recuperação de senha
  */
-public class PasswordResetRequestDTO {
+public class SolicitacaoRecuperarSenhaDTO {
     
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email deve ter formato válido")
     private String email;
 
-    public PasswordResetRequestDTO() {}
+    public SolicitacaoRecuperarSenhaDTO() {}
 
-    public PasswordResetRequestDTO(String email) {
+    public SolicitacaoRecuperarSenhaDTO(String email) {
         this.email = email;
     }
 

@@ -19,10 +19,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class FiltroAutenticacaoJWT extends OncePerRequestFilter {
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
+    private TokenJWT tokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 

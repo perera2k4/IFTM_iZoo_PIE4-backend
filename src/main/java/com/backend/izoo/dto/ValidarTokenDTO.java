@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO para validação do token de recuperação
  */
-public class ValidateTokenDTO {
+public class ValidarTokenDTO {
     
     @NotBlank(message = "Token é obrigatório")
     private String token;
 
-    public ValidateTokenDTO() {}
+    public ValidarTokenDTO() {}
 
-    public ValidateTokenDTO(String token) {
+    public ValidarTokenDTO(String token) {
         this.token = token;
     }
 
