@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "Dados necessários para autenticação do usuário")
-public class LoginRequestDTO {
+public class SolicitacaoLoginDTO {
     
     @NotBlank(message = "Login é obrigatório")
     @Schema(description = "Nome de usuário para login", example = "bruno.pereira", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -14,9 +14,9 @@ public class LoginRequestDTO {
     @Schema(description = "Senha do usuário", example = "MinhaSenh@123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String senha;
     
-    public LoginRequestDTO() {}
+    public SolicitacaoLoginDTO() {}
     
-    public LoginRequestDTO(String login, String senha) {
+    public SolicitacaoLoginDTO(String login, String senha) {
         this.login = login;
         this.senha = senha;
     }

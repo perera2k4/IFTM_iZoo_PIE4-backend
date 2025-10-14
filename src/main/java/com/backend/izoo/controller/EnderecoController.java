@@ -155,6 +155,7 @@ public class EnderecoController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
 
     @DeleteMapping(value = "/{id}")
     @Operation(

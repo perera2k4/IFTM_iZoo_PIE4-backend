@@ -3,7 +3,7 @@ package com.backend.izoo.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Resposta do login com token JWT e dados do usuário")
-public class LoginResponseDTO {
+public class RespostaLoginDTO {
     
     @Schema(description = "Mensagem de sucesso do login", example = "Login realizado com sucesso")
     private String message;
@@ -17,9 +17,9 @@ public class LoginResponseDTO {
     @Schema(description = "Dados do usuário logado")
     private UsuarioDTO usuario;
     
-    public LoginResponseDTO() {}
+    public RespostaLoginDTO() {}
     
-    public LoginResponseDTO(String message, String token, UsuarioDTO usuario) {
+    public RespostaLoginDTO(String message, String token, UsuarioDTO usuario) {
         this.message = message;
         this.token = token;
         this.usuario = usuario;

@@ -19,10 +19,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
+public class ConfigSeguranca {
 
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private FiltroAutenticacaoJWT jwtAuthenticationFilter;
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;
@@ -48,6 +48,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/usuario/registro").permitAll()
                 .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir OPTIONS para CORS
+                
+                // Endpoints de recuperação de senha (públicos)
+                .requestMatchers("/recuperacao-senha/**").permitAll()
                 
                 // Swagger/OpenAPI endpoints
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
