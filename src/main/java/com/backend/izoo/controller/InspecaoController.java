@@ -240,6 +240,58 @@ public class InspecaoController {
         return ResponseEntity.ok().body(lista);
     }
 
+    @GetMapping("/criador/{criadoPor}")
+    @Operation(
+        summary = "Buscar inspeções por criador",
+        description = "Retorna todas as inspeções criadas por um usuário específico. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de inspeções do criador encontrada",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<List<InspecaoDTO>> buscarPorCriador(
+            @Parameter(description = "Login do criador", required = true) 
+            @PathVariable String criadoPor) {
+        List<InspecaoDTO> lista = inspecaoService.buscarPorCriador(criadoPor);
+        return ResponseEntity.ok().body(lista);
+    }
+
+    @GetMapping("/criador/{criadoPor}/status/{status}")
+    @Operation(
+        summary = "Buscar inspeções por criador e status",
+        description = "Retorna inspeções de um criador específico filtradas por status. Requer autenticação."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de inspeções encontrada",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<List<InspecaoDTO>> buscarPorCriadorEStatus(
+            @Parameter(description = "Login do criador", required = true) 
+            @PathVariable String criadoPor,
+            @Parameter(description = "Status da inspeção", required = true) 
+            @PathVariable String status) {
+        List<InspecaoDTO> lista = inspecaoService.buscarPorCriadorEStatus(criadoPor, status);
+        return ResponseEntity.ok().body(lista);
+    }
+
+    @GetMapping("/minhas")
+    @Operation(
+        summary = "Buscar minhas inspeções",
+        description = "Retorna todas as inspeções criadas pelo usuário atualmente autenticado."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de inspeções do usuário encontrada",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Token inválido ou ausente")
+    })
+    public ResponseEntity<List<InspecaoDTO>> buscarMinhasInspecoes() {
+        List<InspecaoDTO> lista = inspecaoService.buscarMinhasInspecoes();
+        return ResponseEntity.ok().body(lista);
+    }
+
     @GetMapping("/deletadas")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(

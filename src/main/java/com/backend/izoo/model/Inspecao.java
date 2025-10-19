@@ -26,6 +26,9 @@ public class Inspecao {
     @NotBlank(message = "Status é obrigatório")
     private String status; // pendente, em andamento, concluído
     
+    @NotBlank(message = "Criado por é obrigatório")
+    private String criadoPor; // Login do usuário que criou a inspeção
+    
     @NotNull
     private Instant createdAt;
     
@@ -82,6 +85,14 @@ public class Inspecao {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getCriadoPor() {
+        return criadoPor;
+    }
+    
+    public void setCriadoPor(String criadoPor) {
+        this.criadoPor = criadoPor;
     }
     
     public Instant getCreatedAt() {

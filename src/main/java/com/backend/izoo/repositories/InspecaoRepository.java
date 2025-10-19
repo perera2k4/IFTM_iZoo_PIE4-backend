@@ -34,4 +34,10 @@ public interface InspecaoRepository extends MongoRepository<Inspecao, String> {
     
     // Buscar por endereço ID e status
     List<Inspecao> findByEnderecoIdAndStatusIgnoreCase(String enderecoId, String status);
+    
+    // Buscar por criador
+    List<Inspecao> findByCriadoPor(String criadoPor);
+    
+    // Buscar por criador e status
+    List<Inspecao> findByCriadoPorAndStatusIgnoreCase(String criadoPor, String status);
 }

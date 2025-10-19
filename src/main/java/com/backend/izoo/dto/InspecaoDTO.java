@@ -22,6 +22,9 @@ public class InspecaoDTO {
     @NotBlank(message = "Status é obrigatório")
     private String status;
     
+    @NotBlank(message = "Criado por é obrigatório")
+    private String criadoPor;
+    
     private Instant createdAt;
     private Instant updatedAt;
     
@@ -34,6 +37,7 @@ public class InspecaoDTO {
         this.enderecoId = entidade.getEnderecoId();
         this.gravidade = entidade.getGravidade();
         this.status = entidade.getStatus();
+        this.criadoPor = entidade.getCriadoPor();
         this.createdAt = entidade.getCreatedAt();
         this.updatedAt = entidade.getUpdatedAt();
     }
@@ -77,6 +81,14 @@ public class InspecaoDTO {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getCriadoPor() {
+        return criadoPor;
+    }
+    
+    public void setCriadoPor(String criadoPor) {
+        this.criadoPor = criadoPor;
     }
     
     public Instant getCreatedAt() {

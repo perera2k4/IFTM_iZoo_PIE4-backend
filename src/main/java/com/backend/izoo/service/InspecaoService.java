@@ -40,8 +40,13 @@ public class InspecaoService {
     }
 
     public InspecaoDTO inserir(@Valid InspecaoDTO inspecaoDTO) {
+        // Obter usuário atual autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String criadoPor = auth != null ? auth.getName() : "Sistema";
+        
         Inspecao entidade = new Inspecao();
         copiaDTOparaEntidade(inspecaoDTO, entidade);
+        entidade.setCriadoPor(criadoPor); // Associar automaticamente o usuário
         entidade.setCreatedAt(Instant.now());
         entidade.setUpdatedAt(Instant.now());
         entidade = inspecaoRepository.save(entidade);
@@ -141,11 +146,35 @@ public class InspecaoService {
         return lista.stream().map(InspecaoDTO::new).toList();
     }
 
+    public List<InspecaoDTO> buscarPorCriador(String criadoPor) {
+        List<Inspecao> lista = inspecaoRepository.findByCriadoPor(criadoPor);
+        return lista.stream().map(InspecaoDTO::new).toList();
+    }
+
+    public List<InspecaoDTO> buscarPorCriadorEStatus(String criadoPor, String status) {
+        List<Inspecao> lista = inspecaoRepository.findByCriadoPorAndStatusIgnoreCase(criadoPor, status);
+        return lista.stream().map(InspecaoDTO::new).toList();
+    }
+
+    public List<InspecaoDTO> buscarMinhasInspecoes() {
+        // Buscar inspeções do usuário atualmente autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth != null ? auth.getName() : null;
+        
+        if (currentUser == null) {
+            throw new RuntimeException("Usuário não autenticado");
+        }
+        
+        return buscarPorCriador(currentUser);
+    }
+
     private void copiaDTOparaEntidade(InspecaoDTO inspecaoDTO, Inspecao entidade) {
         entidade.setTipo(inspecaoDTO.getTipo());
         entidade.setEnderecoId(inspecaoDTO.getEnderecoId());
         entidade.setGravidade(inspecaoDTO.getGravidade());
         entidade.setStatus(inspecaoDTO.getStatus());
+        // Nota: criadoPor é definido automaticamente no método inserir()
+        // para garantir que seja sempre o usuário autenticado
     }
 
     private void copiaDTOparaEntidadeParcial(InspecaoDTO inspecaoDTO, Inspecao entidade) {
@@ -161,5 +190,7 @@ public class InspecaoService {
         if (inspecaoDTO.getStatus() != null && !inspecaoDTO.getStatus().trim().isEmpty()) {
             entidade.setStatus(inspecaoDTO.getStatus());
         }
+        // Nota: criadoPor não deve ser alterado em atualizações
+        // para manter a integridade do audit trail
     }
 }
