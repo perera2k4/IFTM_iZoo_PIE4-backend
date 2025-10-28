@@ -95,7 +95,7 @@ public class InspecaoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Atualizar inspeção completa",
         description = "Atualiza todos os dados de uma inspeção existente. Acesso restrito a ADMIN e AGENT."
@@ -116,7 +116,7 @@ public class InspecaoController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Atualizar inspeção parcialmente",
         description = "Atualiza apenas os campos fornecidos de uma inspeção. Acesso restrito a ADMIN e AGENT."

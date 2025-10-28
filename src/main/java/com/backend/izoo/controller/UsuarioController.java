@@ -118,16 +118,16 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @Operation(
         summary = "Listar todos os usuários",
-        description = "Retorna uma lista com todos os usuários cadastrados. Requer permissão de administrador.",
+        description = "Retorna uma lista com todos os usuários cadastrados. Requer permissão de ADMIN ou AGENT.",
         security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioDTO.class))),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas administradores")
+        @ApiResponse(responseCode = "403", description = "Acesso negado - Apenas ADMIN ou AGENT")
     })
     public ResponseEntity<List<UsuarioDTO>> buscarTodos() {
         List<UsuarioDTO> lista = usuarioService.buscarTodos();
