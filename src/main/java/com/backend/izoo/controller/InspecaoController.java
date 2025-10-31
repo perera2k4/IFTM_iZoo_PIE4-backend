@@ -95,20 +95,20 @@ public class InspecaoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @Operation(
-        summary = "Atualizar inspeção completa",
-        description = "Atualiza todos os dados de uma inspeção existente. Acesso restrito a ADMIN e AGENT."
+            summary = "Atualizar inspeção completa",
+            description = "Atualiza todos os dados de uma inspeção existente. Acesso restrito a ADMIN e AGENT."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Inspeção atualizada com sucesso",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Inspeção não encontrada"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN ou AGENT")
+            @ApiResponse(responseCode = "200", description = "Inspeção atualizada com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Inspeção não encontrada"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN ou AGENT")
     })
     public ResponseEntity<InspecaoDTO> atualizar(
-            @Parameter(description = "ID da inspeção", required = true) 
+            @Parameter(description = "ID da inspeção", required = true)
             @PathVariable String id,
             @Valid @RequestBody InspecaoDTO inspecaoDTO) {
         InspecaoDTO inspecaoAtualizada = inspecaoService.atualizar(id, inspecaoDTO);
@@ -116,19 +116,19 @@ public class InspecaoController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @Operation(
-        summary = "Atualizar inspeção parcialmente",
-        description = "Atualiza apenas os campos fornecidos de uma inspeção. Acesso restrito a ADMIN e AGENT."
+            summary = "Atualizar inspeção parcialmente",
+            description = "Atualiza apenas os campos fornecidos de uma inspeção. Acesso restrito a ADMIN e AGENT."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Inspeção atualizada parcialmente com sucesso",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Inspeção não encontrada"),
-        @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN ou AGENT")
+            @ApiResponse(responseCode = "200", description = "Inspeção atualizada parcialmente com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InspecaoDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Inspeção não encontrada"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - apenas ADMIN ou AGENT")
     })
     public ResponseEntity<InspecaoDTO> atualizarParcial(
-            @Parameter(description = "ID da inspeção", required = true) 
+            @Parameter(description = "ID da inspeção", required = true)
             @PathVariable String id,
             @RequestBody InspecaoDTO inspecaoDTO) {
         InspecaoDTO inspecaoAtualizada = inspecaoService.atualizarParcial(id, inspecaoDTO);
