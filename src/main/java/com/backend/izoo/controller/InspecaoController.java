@@ -190,7 +190,7 @@ public class InspecaoController {
     @GetMapping("/gravidade/{gravidade}")
     @Operation(
         summary = "Buscar inspeções por gravidade",
-        description = "Retorna lista de inspeções filtradas por gravidade. Valores válidos: 'baixa', 'moderada', 'alta', 'gravissima'."
+        description = "Retorna lista de inspeções filtradas por gravidade. Valores válidos: 'baixa', 'moderada', 'grave', 'gravissima'."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de inspeções filtrada por gravidade",
